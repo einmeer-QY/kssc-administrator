@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.einmeer.mapper.AdministratorsMapper">
+
+    <!--根据管理员和权限联合查询-->
+    <select id="selectAllByAAP" resultType="Administrators">
+        SELECT a.administrators_id       administratorsId,
+               a.administrators_name     administratorsName,
+               a.administrators_phone    administratorsPhone,
+               a.administrators_weChat   administratorsWeChat,
+               a.administrators_email    administratorsEmail,
+               ap.purview_name           administratorsPurviewNameNoSql,
+               a.administrators_username administratorsUsername,
+               a.administrators_picture  administratorsPicture,
+               a.administrators_duties   administratorsDuties,
+               a.administrators_state    administratorsState
+        FROM administrators a,
+             administrators_purview ap
+        WHERE a.administrators_purviewId = ap.purview_id
+
+    </select>
+</mapper>
