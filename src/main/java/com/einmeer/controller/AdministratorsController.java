@@ -3,6 +3,7 @@ package com.einmeer.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.einmeer.entity.Administrators;
 import com.einmeer.service.AdministratorsService;
+import com.einmeer.util.MyUtil;
 import com.einmeer.vo.ResultJson;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -31,9 +32,15 @@ public class AdministratorsController {
     @Resource
     AdministratorsService administratorsService;
 
+    /**
+     * 登录
+     * @param administratorsUsername
+     * @param administratorsPassword
+     * @return
+     */
     @GetMapping("/login")
     ResultJson login(@RequestParam("administratorsUsername") String administratorsUsername,@RequestParam("administratorsPassword") String administratorsPassword){
-        return ResultJson.success(administratorsService.login(administratorsUsername, administratorsPassword),"登录成功");
+        return ResultJson.success(MyUtil.getJWT(administratorsService.login(administratorsUsername, administratorsPassword) ),"登录成功");
     }
 
     /**

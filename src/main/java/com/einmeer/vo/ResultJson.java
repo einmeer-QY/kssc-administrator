@@ -72,5 +72,9 @@ public class ResultJson {
         return failed(null, message);
     }
 
+    // 登录失败
+    public static ResultJson unlogin(String message){
+        return getInstance(ResultCode.UNLOGIN,null,message);
+    }
 }
 
