@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * @author 芊嵛
@@ -34,15 +36,17 @@ public class MyFilter implements Filter {
             String token = request.getHeader("token");
             // 获取请求地址，如果是登录地址不必校验
             String requestURI = request.getRequestURI();
-            if ("/administrators/login".equals(requestURI)){
+            if ("/administrators/login".equals(requestURI)) {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
-            System.out.println(requestURI);
+//            System.out.println(requestURI);
             // 对token进行校验,如果校验不通过会抛出异常
             try {
                 Administrators administrators = MyUtil.doToken(token);
-                filterChain.doFilter(servletRequest, servletResponse);
+                MyRequest myRequest = new MyRequest(request);
+                myRequest.addAttribute("overallId", String.valueOf(administrators.getAdministratorsId()));
+                filterChain.doFilter(myRequest, servletResponse);
 
             } catch (Exception ex) {
                 ex.printStackTrace();

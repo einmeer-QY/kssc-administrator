@@ -19,4 +19,9 @@ public interface AdministratorsMapper extends BaseMapper<Administrators> {
     // 管理查询管理员与权限表
     IPage<Administrators> selectAllByAAP(Page<?> page);
 
+    // 查询一条关联
+    Administrators selectOneInfo(Integer administratorsId);
+    // 查询一条不关联
+    Administrators selectOneInfoNo(Integer administratorsId);
+
 }

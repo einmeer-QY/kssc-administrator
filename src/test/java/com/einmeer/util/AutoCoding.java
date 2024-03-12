@@ -14,7 +14,7 @@ import java.util.Map;
 public class AutoCoding {
     public static void main(String[] args) {
         // 表名
-        String table = "sys_file";
+        String table = "administrators_purview";
         // 获取项目目录
         String path = System.getProperty("user.dir");
         String url = "jdbc:mysql://192.168.21.130:3306/ks_second_classroom?useUnicode=true&characterEncoding=utf8";

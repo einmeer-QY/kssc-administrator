@@ -19,4 +19,35 @@
         WHERE a.administrators_purviewId = ap.purview_id
 
     </select>
+
+    <!--查询一条信息关联-->
+    <select id="selectOneInfo" resultType="Administrators">
+        SELECT a.administrators_id       administratorsId,
+               a.administrators_name     administratorsName,
+               a.administrators_phone    administratorsPhone,
+               a.administrators_weChat   administratorsWeChat,
+               a.administrators_email    administratorsEmail,
+               ap.purview_name           administratorsPurviewNameNoSql,
+               a.administrators_username administratorsUsername,
+               a.administrators_picture  administratorsPicture,
+               a.administrators_duties   administratorsDuties,
+               a.administrators_state    administratorsState
+        FROM administrators a,
+             administrators_purview ap
+        WHERE a.administrators_purviewId = ap.purview_id and a.administrators_id = #{administratorsId}
+    </select>
+
+    <!--查询一条信息不关联-->
+    <select id="selectOneInfoNo" resultType="Administrators">
+        SELECT administrators_id        administratorsId,
+               administrators_name      administratorsName,
+               administrators_phone     administratorsPhone,
+               administrators_weChat    administratorsWeChat,
+               administrators_email     administratorsEmail,
+               administrators_purviewId administratorsPurviewId,
+               administrators_username  administratorsUsername,
+               administrators_duties    administratorsDuties
+        FROM administrators
+        WHERE administrators_id = #{administratorsId}
+    </select>
 </mapper>

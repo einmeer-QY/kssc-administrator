@@ -18,6 +18,7 @@ public class MyUtil {
         return JWT.create()
                 .withClaim("administratorsId", administrators.getAdministratorsId())
                 .withClaim("administratorsUsername", administrators.getAdministratorsUsername())
+                .withClaim("administratorsName", administrators.getAdministratorsName())
                 .sign(Algorithm.HMAC256(KEY));
     }
 
@@ -28,9 +29,11 @@ public class MyUtil {
         DecodedJWT verify = build.verify(token);
         Integer administratorsId = verify.getClaim("administratorsId").asInt();
         String administratorsUsername = verify.getClaim("administratorsUsername").asString();
+        String administratorsName = verify.getClaim("administratorsName").asString();
         Administrators administrators = new Administrators();
         administrators.setAdministratorsId(administratorsId);
         administrators.setAdministratorsUsername(administratorsUsername);
+        administrators.setAdministratorsName(administratorsName);
         return administrators;
     }
 }

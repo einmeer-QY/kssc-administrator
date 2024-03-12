@@ -5,18 +5,15 @@ import com.einmeer.entity.Administrators;
 import com.einmeer.service.AdministratorsService;
 import com.einmeer.util.MyUtil;
 import com.einmeer.vo.ResultJson;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
 import io.minio.errors.*;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Wrapper;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -34,17 +31,23 @@ public class AdministratorsController {
 
     /**
      * 登录
+     *
      * @param administratorsUsername
      * @param administratorsPassword
      * @return
      */
     @GetMapping("/login")
-    ResultJson login(@RequestParam("administratorsUsername") String administratorsUsername,@RequestParam("administratorsPassword") String administratorsPassword){
-        return ResultJson.success(MyUtil.getJWT(administratorsService.login(administratorsUsername, administratorsPassword) ),"登录成功");
+    ResultJson login(@RequestParam("administratorsUsername") String administratorsUsername, @RequestParam("administratorsPassword") String administratorsPassword) {
+        Administrators administrators = administratorsService.login(administratorsUsername, administratorsPassword);
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("name", administrators.getAdministratorsName());
+        hashMap.put("token", MyUtil.getJWT(administrators));
+        return ResultJson.success(hashMap, "登录成功");
     }
 
     /**
      * 查询全部
+     *
      * @param pageNo
      * @param pageSize
      * @return
@@ -55,17 +58,34 @@ public class AdministratorsController {
     }
 
     /**
-     * 根据id查询一条
-     * @param administratorsId
+     * 根据id查询一条关联
+     *
+     * @param overallId
      * @return
      */
     @GetMapping("/oneInfo")
-    ResultJson OneInfo(@RequestParam("administratorsId") Integer administratorsId) {
-        return ResultJson.success(administratorsService.queryOneInfo(administratorsId), "根据id查询一条信息");
+    ResultJson OneInfo(@RequestParam("overallId") Integer overallId) {
+        return ResultJson.success(administratorsService.queryOneInfo(overallId), "根据id查询一条信息");
+    }
+
+    /**
+     * 根据id查询一条不关联
+     *
+     * @param administratorsId
+     * @return
+     */
+    @GetMapping("/oneInfoNo")
+    ResultJson OneInfoNo(@RequestParam("administratorsId") Integer administratorsId) {
+        Administrators administrators = administratorsService.queryOneInfoNo(administratorsId);
+        if (null == administrators) {
+            return ResultJson.failed("查询为空");
+        }
+        return ResultJson.success(administrators, "查询成功");
     }
 
     /**
      * 创建管理员
+     *
      * @param administrators
      * @return
      */
@@ -77,6 +97,7 @@ public class AdministratorsController {
 
     /**
      * 根基id修改管理员头像
+     *
      * @param administrators
      * @param file
      * @return
@@ -91,13 +112,13 @@ public class AdministratorsController {
      * @throws InternalException
      */
     @PutMapping("/Picture")
-    ResultJson updatePicture(Administrators administrators, @RequestParam("file") MultipartFile file) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        administrators.setAdministratorsId(9);
+    ResultJson updatePicture(Administrators administrators, @RequestParam("file") MultipartFile file, @RequestParam("overallId") Integer overallId) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        administrators.setAdministratorsId(overallId);
 
         // 存本地
 //        file.transferTo(new File("g:/aaa.jpg"));
 
-        int n = administratorsService.changePicture(administrators,file);
+        int n = administratorsService.changePicture(administrators, file);
         if (0 == n) {
             return ResultJson.failed(n, "修改失败，无此用户id");
         } else if (1 == n) {
@@ -106,5 +127,46 @@ public class AdministratorsController {
         return ResultJson.failed("更新失败");
     }
 
+    // 修改个人信息
+    @PutMapping("/changeMyInfo")
+    ResultJson changeMyInfo(@RequestBody Administrators administrators) {
+        int n = administratorsService.changeMyInfo(administrators);
+        if (n == 1) {
+            return ResultJson.success("修改成功");
+        }
+        return ResultJson.failed("修改失败");
+
+    }
+
+    /**
+     * 修改一个管理员信息
+     *
+     * @param administrators
+     * @return
+     */
+    @PutMapping("/changeAdministrator")
+    ResultJson changeAdministrator(@RequestBody Administrators administrators) {
+        int n = administratorsService.changeAdministrator(administrators);
+        if (n == 1) {
+            return ResultJson.success("修改成功");
+        }
+        return ResultJson.failed("修改失败");
+    }
+
+    /**
+     * 修改状态
+     *
+     * @param administrators
+     * @return
+     */
+    @PutMapping("/changeAdministratorsState")
+    ResultJson changeAdministratorsState(@RequestBody Administrators administrators) {
+        int n = administratorsService.changeAdministratorsState(administrators);
+        if (0 == n) {
+            return ResultJson.failed("更新失败");
+        } else {
+            return ResultJson.success("更新成功");
+        }
+    }
 
 }

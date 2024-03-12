@@ -1,6 +1,7 @@
 package com.einmeer.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.einmeer.config.MyException;
@@ -9,6 +10,7 @@ import com.einmeer.mapper.AdministratorsMapper;
 import com.einmeer.service.AdministratorsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.einmeer.service.SysFileService;
+import com.einmeer.vo.ResultJson;
 import io.minio.errors.*;
 import jakarta.annotation.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -79,7 +81,13 @@ public class AdministratorsServiceImpl extends ServiceImpl<AdministratorsMapper,
      */
     @Override
     public Administrators queryOneInfo(Integer administratorsId) {
-        return administratorsMapper.selectById(administratorsId);
+
+        return administratorsMapper.selectOneInfo(administratorsId);
+    }
+
+    @Override
+    public Administrators queryOneInfoNo(Integer administratorsId) {
+        return administratorsMapper.selectOneInfoNo(administratorsId);
     }
 
 
@@ -108,6 +116,40 @@ public class AdministratorsServiceImpl extends ServiceImpl<AdministratorsMapper,
         String path = sysFileService.upload(file, "image");
         administrators.setAdministratorsPicture(path);
         return administratorsMapper.updateById(administrators);
+    }
+
+    /**
+     * 修改个人信息
+     *
+     * @param administrators
+     * @return
+     */
+    @Override
+    public int changeMyInfo(Administrators administrators) {
+        return administratorsMapper.updateById(administrators);
+    }
+
+    /**
+     * 管理员修改其他管理员信息
+     * @param administrators
+     * @return
+     */
+    @Override
+    public int changeAdministrator(Administrators administrators) {
+        return administratorsMapper.updateById(administrators);
+    }
+
+    /**
+     * 修改状态
+     *
+     * @param administrators
+     * @return
+     */
+    @Override
+    public int changeAdministratorsState(Administrators administrators) {
+        int n = 0;
+        n = administratorsMapper.updateById(administrators);
+        return n;
     }
 
 
